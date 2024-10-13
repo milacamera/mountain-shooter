@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from code.Const import ENTITY_SPEED, ENTITY_SHOT_DELAY
+from code.Const import ENTITY_SPEED, ENTITY_SHOT_DELAY, WIN_HEIGHT
 from code.EnemyShot import EnemyShot
 from code.Entity import Entity
 
@@ -18,3 +18,25 @@ class Enemy(Entity):
         if self.shot_delay == 0:
             self.shot_delay = ENTITY_SHOT_DELAY[self.name]
             return EnemyShot(name=f'{self.name}Shot', position=(self.rect.centerx, self.rect.centery))
+
+class Enemy3(Enemy):
+    def __init__(self, name: str, position: tuple):
+        super().__init__(name, position)
+        self.vertical_speed = 2  # Velocidade de movimento vertical
+        self.direction = 1  # 1 para subir, -1 para descer
+
+    def move(self):
+        # Movimento horizontal
+        self.rect.centerx -= ENTITY_SPEED[self.name]
+
+        # Movimento vertical
+        self.rect.centery += self.direction * self.vertical_speed
+
+        # Checagem de colisão com as bordas
+        if self.rect.bottom >= WIN_HEIGHT:  # Bateu na borda inferior
+            self.direction = -1  # Começa a subir
+        elif self.rect.top <= 0:  # Bateu na borda superior
+            self.direction = 1  # Começa a descer com velocidade dobrada
+            self.vertical_speed *= 2  # Dobrar a velocidade ao descer
+        else:
+            self.vertical_speed = 2  # Reseta a velocidade normal ao subir
